@@ -14,10 +14,14 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-            steps {
-                sh 'pip install -r app/requirements.txt'
-            }
+        steps {
+            sh '''
+            cd sonar
+            pip install -r app/requirements.txt
+            '''
         }
+      }
+
 
         stage('Run Linting') {
             steps {
