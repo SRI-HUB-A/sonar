@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        SONARQUBE_URL = 'http://sonarqube:9000'
-        SONARQUBE_SCANNER = 'SonarQubeScanner'
+        SONARQUBE_URL = 'http://sonarqube:9000' // SonarQube URL
+        SONARQUBE_SCANNER = 'SonarQubeScanner'   // Sonar Scanner Tool Name
     }
 
     stages {
@@ -14,25 +14,28 @@ pipeline {
         }
 
         stage('Install Dependencies') {
-        steps {
-            sh '''
-            cd sonar
-            pip install -r app/requirements.txt
-            '''
+            steps {
+                sh '''
+                cd sonar
+                pip install -r app/requirements.txt
+                '''
+            }
         }
-      }
-
 
         stage('Run Linting') {
             steps {
-                sh 'pylint app/*.py || true'
+                sh '''
+                cd sonar
+                pylint app/*.py || true
+                '''
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('SonarQube') { // SonarQube tool name from Jenkins
                     sh '''
+                    cd sonar
                     sonar-scanner \
                       -Dsonar.projectKey=python_app \
                       -Dsonar.sources=app \
@@ -49,6 +52,15 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            echo '✅ Pipeline executed successfully!'
+        }
+        failure {
+            echo '❌ Pipeline failed!'
         }
     }
 }
