@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git 'https://github.com/SRI-HUB-A/sonar/tree/main'
+                git 'https://github.com/SRI-HUB-A/sonar/tree/main/app'
             }
         }
 
